@@ -191,7 +191,7 @@ func (myInstabot MyInstabot) loopTags() {
 }
 
 // Likes an image, if not liked already
-func (myInstabot MyInstabot) likeImage(image goinsta.Item) {
+func (myInstabot MyInstabot) likeImage(image goinsta.Item) error {
 	log.Println("Liking the picture")
 	if !image.HasLiked {
 		if !dev {
@@ -201,8 +201,10 @@ func (myInstabot MyInstabot) likeImage(image goinsta.Item) {
 		numLiked++
 		report[line{tag, "like"}]++
 	} else {
-		log.Println("Image already liked")
+		return errors.New("image already liked")
 	}
+
+	return nil
 }
 
 func (myInstabot MyInstabot) browse() {
@@ -274,7 +276,6 @@ func (myInstabot MyInstabot) goThrough(images *goinsta.FeedTag) {
 		checkedUser[userInfo.Username] = true
 		log.Println("Checking followers for " + userInfo.Username + " - for #" + tag)
 		log.Printf("%s has %d followers\n", userInfo.Username, followerCount)
-		i++
 
 		// Will only follow and comment if we like the picture
 		like := followerCount > likeLowerLimit && followerCount < likeUpperLimit && numLiked < limits["like"]
@@ -287,9 +288,8 @@ func (myInstabot MyInstabot) goThrough(images *goinsta.FeedTag) {
 
 		var followingUsers []goinsta.User
 		for following.Next() {
-			for _, user := range following.Users {
-				followingUsers = append(followingUsers, user)
-			}
+			followingUsers = append(followingUsers, following.Users...)
+
 		}
 
 		for _, user := range followingUsers {
@@ -302,7 +302,11 @@ func (myInstabot MyInstabot) goThrough(images *goinsta.FeedTag) {
 		// Like, then comment/follow
 		if !skip {
 			if like {
-				myInstabot.likeImage(image)
+				err := myInstabot.likeImage(image)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
 				if follow && !containsString(userBlacklist, userInfo.Username) {
 					myInstabot.followUser(userInfo)
 				}
@@ -311,6 +315,8 @@ func (myInstabot MyInstabot) goThrough(images *goinsta.FeedTag) {
 				}
 			}
 		}
+
+		i++
 		log.Printf("%s done\n\n", userInfo.Username)
 
 		// This is to avoid the temporary ban by Instagram

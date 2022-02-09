@@ -181,10 +181,8 @@ func send(body string, success bool) {
 			}
 
 		} else {
-			auth := smtp.PlainAuth("", from, pass, viper.GetString("user.mail.server"))
-
 			err := smtp.SendMail(viper.GetString("user.mail.smtp"),
-				auth,
+				smtp.PlainAuth("", from, pass, viper.GetString("user.mail.server")),
 				from, []string{to}, []byte(msg))
 
 			if err != nil {
