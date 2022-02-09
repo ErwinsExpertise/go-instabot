@@ -170,13 +170,27 @@ func send(body string, success bool) {
 			"Subject:" + status + "  go-instabot\n\n" +
 			body
 
-		err := smtp.SendMail(viper.GetString("user.mail.smtp"),
-			smtp.PlainAuth("", from, pass, viper.GetString("user.mail.server")),
-			from, []string{to}, []byte(msg))
+		if pass == "" {
+			err := smtp.SendMail(viper.GetString("user.mail.smtp"),
+				nil,
+				from, []string{to}, []byte(msg))
 
-		if err != nil {
-			log.Printf("smtp error: %s", err)
-			return
+			if err != nil {
+				log.Printf("smtp error: %s", err)
+				return
+			}
+
+		} else {
+			auth := smtp.PlainAuth("", from, pass, viper.GetString("user.mail.server"))
+
+			err := smtp.SendMail(viper.GetString("user.mail.smtp"),
+				auth,
+				from, []string{to}, []byte(msg))
+
+			if err != nil {
+				log.Printf("smtp error: %s", err)
+				return
+			}
 		}
 
 		log.Print("sent")
