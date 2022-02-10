@@ -45,5 +45,6 @@
         "nice pic"
     ],
     "blacklist": [],
+    "tag_blacklist": [],
     "whitelist": []
 }

@@ -190,6 +190,26 @@ func (myInstabot MyInstabot) loopTags() {
 	buildReport()
 }
 
+func (myInstabot MyInstabot) loopTags2() {
+	keys := reflect.ValueOf(tagsList).MapKeys()
+
+	for i := 0; i <= 5; i++ {
+		tag = keys[rand.Intn(len(keys))].String()
+		limits = map[string]int{
+			"follow":  int(0),
+			"like":    int(3),
+			"comment": int(0),
+		}
+		// What we did so far
+		numFollowed = 0
+		numLiked = 0
+		numCommented = 0
+
+		myInstabot.browse()
+	}
+	buildReport()
+}
+
 // Likes an image, if not liked already
 func (myInstabot MyInstabot) likeImage(image goinsta.Item) error {
 	log.Println("Liking the picture")
@@ -237,6 +257,7 @@ func (myInstabot MyInstabot) goThrough(images *goinsta.FeedTag) {
 	var i = 0
 
 	// do for other too
+img:
 	for _, image := range images.Images {
 		// Exiting the loop if there is nothing left to do
 		if numFollowed >= limits["follow"] && numLiked >= limits["like"] && numCommented >= limits["comment"] {
@@ -256,6 +277,14 @@ func (myInstabot MyInstabot) goThrough(images *goinsta.FeedTag) {
 		// Skip checked user if the flag is turned on
 		if checkedUser[image.User.Username] && noduplicate {
 			continue
+		}
+
+		// Check for blacklisted tags
+		for _, tag := range tagsBlackList {
+			if strings.Contains(image.Caption.Text, tag) {
+				log.Println("image caption contains blacklisted tag, skipping")
+				continue img
+			}
 		}
 
 		// Getting the user info

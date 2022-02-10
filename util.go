@@ -50,6 +50,9 @@ var commentUpperLimit int
 // Hashtags list. Do not put the '#' in the config file
 var tagsList map[string]interface{}
 
+// Hashtage blacklist
+var tagsBlackList []string
+
 // Limits for the current hashtag
 var limits map[string]int
 
@@ -138,7 +141,9 @@ func getConfig() {
 	commentLowerLimit = viper.GetInt("limits.comment.min")
 	commentUpperLimit = viper.GetInt("limits.comment.max")
 
+	// Need to change this
 	tagsList = viper.GetStringMap("tags")
+	tagsBlackList = viper.GetStringSlice("tag_blacklist")
 
 	commentsList = viper.GetStringSlice("comments")
 
