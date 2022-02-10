@@ -29,6 +29,12 @@ var (
 	// Whether we want to have logging
 	logs bool
 
+	// Random tags
+	randtag bool
+
+	// Amount of tags to run
+	amount int
+
 	// Used to skip following, liking and commenting same user in this session
 	noduplicate bool
 )
@@ -93,6 +99,8 @@ func parseOptions() {
 	flag.BoolVar(&dev, "dev", false, "Use this option to use the script in development mode : nothing will be done for real")
 	flag.BoolVar(&logs, "logs", false, "Use this option to enable the logfile")
 	flag.BoolVar(&noduplicate, "noduplicate", false, "Use this option to skip following, liking and commenting same user in this session")
+	flag.BoolVar(&randtag, "randtag", false, "Use this option to randomly choose tags from list to run. This will need to be used in conjuction with amount flag")
+	flag.IntVar(&amount, "amount", 0, "Use this option to specify the amount of tags from list to run.")
 
 	flag.Parse()
 

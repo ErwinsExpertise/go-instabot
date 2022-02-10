@@ -18,9 +18,12 @@ func main() {
 	login()
 	if unfollow {
 		instabot.syncFollowers()
-	} else if run {
+	} else if run && !randtag {
 		// Loop through tags ; follows, likes, and comments, according to the config file
 		instabot.loopTags()
+	} else if run && randtag {
+		instabot.loopTagsMulti()
 	}
+
 	instabot.updateConfig()
 }

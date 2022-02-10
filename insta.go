@@ -190,15 +190,20 @@ func (myInstabot MyInstabot) loopTags() {
 	buildReport()
 }
 
-func (myInstabot MyInstabot) loopTags2() {
+func (myInstabot MyInstabot) loopTagsMulti() {
+	if amount == 0 {
+		log.Fatal("amount not set")
+	}
+
 	keys := reflect.ValueOf(tagsList).MapKeys()
 
-	for i := 0; i <= 5; i++ {
+	for i := 0; i <= amount; i++ {
 		tag = keys[rand.Intn(len(keys))].String()
+		limitsConf := viper.GetStringMap("tags." + tag)
 		limits = map[string]int{
-			"follow":  int(0),
-			"like":    int(3),
-			"comment": int(0),
+			"follow":  int(limitsConf["follow"].(float64)),
+			"like":    int(limitsConf["like"].(float64)),
+			"comment": int(limitsConf["comment"].(float64)),
 		}
 		// What we did so far
 		numFollowed = 0
